@@ -1,0 +1,91 @@
+﻿.JsGrid--toolbar{
+    border-top: 1px solid #ddd;
+    padding: 3px 5px;
+}
+.JsGrid--toolbar input.filter{
+    border-radius: 10px;
+    box-shadow: none;
+    outline: none;
+    border: 1px solid #dcdcdc;
+    padding: 0 5px;
+}
+.table-responsive{
+    margin-bottom: 0;
+}
+.JsGrid-pagination{
+    border-bottom: 1px solid #ddd;
+}
+.paginationInput{
+    max-width: 40px;
+    height: 25px;
+    border: 1px solid #dedede;
+}
+.pagingActions{
+    margin:0;
+    padding: 3px 5px;
+}
+.pagingActions .pagingBtn{
+    margin-right: 2px;
+}
+.pageTotalCount{
+    padding: 3px;
+}
+.JsGrid-table{
+    min-height: 200px;
+    max-height: 500px;
+    border: 1px solid #ddd;
+    position: relative;
+}
+.JsGrid-table table{
+    margin: 0;
+    border: 0;
+    width: 99.95%;
+}
+.JsGrid-table table th{
+    text-transform: capitalize;
+}
+.JsGrid-table table td.jsGrid-table-cell{
+    vertical-align: middle;
+}
+
+.JsGrid-table table thead.jsGrid-fixedHeader{
+    position: absolute;
+    /*top: 100px;*/
+    width: 100%;
+    background: #fff;
+}
+.jsGrid--paging-select{
+    height: 25px;
+    margin-left: 5px;
+    border: 1px solid #ddd;
+}
+.jsGrid-table-cell.edit-cell{
+    padding: 0;
+}
+.jsGrid-table-cell.edit-cell input{
+    width: 98%;
+    height: 100%;
+    margin-left: 1%;
+}
+.jsGrid-table-cell.edit-cell select{
+    width: 98%;
+    height: 90%;
+    margin-left: 1%;
+}
+.jsGrid-table-cell.edit-cell.datePickerCell{
+    position: relative;
+}
+
+
+.jsGrid-table-cell.edit-cell .jsGrid-inputGroup input{
+    width: calc(100% - 24px);
+    padding-right: 2px;
+}
+
+.jsGrid-table-cell.edit-cell  .jsGrid-inputGroup [class*='addon']{
+    padding: 6px 10px;
+}
+
+.jsGrid-inputGroup [class*='addon']:before{
+    margin-left: -6px;
+}

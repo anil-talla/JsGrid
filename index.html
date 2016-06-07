@@ -1,0 +1,371 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>JS Grid</title>
+    <link rel="stylesheet" href="bootstrap-3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="font-awesome-4.5.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="grid.css"/>
+    <script src="grid.js"></script>
+</head>
+<body>
+    <div id="dynamicGrid" data-grid></div>
+    <div id="dynamicGrid2" data-grid></div>
+    <div class="selectedDate"></div>
+    <input id="date-input"/>
+    <div class="js-date-picker">
+        <div class="container">
+            <div class="btn-group btn-group-justified">
+                <div class="btn btn-default" onclick="previousMonth()"><i class="fa fa-angle-left"></i></div>
+                <div class="btn-group">
+                    <button class="btn btn-default displayMonth" onclick="displayMonthCal()"></button>
+                </div>
+                <div class="btn-group ">
+                    <button class="btn btn-default displayYear" onclick="displayYearCal()"></button>
+                </div>
+                <div class="btn btn-default" onclick="nextMonth()" ><i class="fa fa-angle-right"></i></div>
+            </div>
+        </div>
+        <div class="container">
+            <table class="table table-stripe js-dates">
+                <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wen</th>
+                        <th>Thr</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <style>
+        .js-date-picker{
+            max-width: 330px;
+            margin: 10px;
+            border: 1px solid #dddddd;
+        }
+        .js-date-picker .container{
+            max-width: 100%;
+        }
+        .js-date-picker .container{
+            padding: 0;
+        }
+        .js-date-picker .table{
+            margin: 0;
+            text-align: center;
+        }
+        .js-date-picker .date--cell{
+            cursor: pointer;
+        }
+        .js-date-picker .date--cell:hover{
+            background: #f2f2f2;
+        }
+        .today{
+            background: #ffd800;
+        }
+        .js-date-picker .monthCalendar thead,.js-date-picker .yearCalendar thead{
+            display: none;
+        }
+    </style>
+    <script>
+        (function (datePicker) {
+            var JsDatePicker = function (config) {
+                var _this = this;
+                _this.displayFormat = config['displayFormat'] || 'MM/dd/yyyy',
+                _this.valueFormat = config['valueFormat'] || "yyyy-MM-dd",
+                _this.value = config['value'],
+                _this.element = config['element']
+            }
+            JsDatePicker.prototype.prepareDatePicker = function () {
+
+            }
+        })(window.datePicker || (window.datePicker = {}));
+
+        var dataGrid;
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        //var 
+        var currentDate = new Date();
+        var today = {
+            Day: currentDate.getDate(),
+            Month: currentDate.getMonth(),
+            Year: currentDate.getFullYear()
+        }, startDay, currentCal = {};
+        var displayCal = new Date();
+        var typeCalendar = {
+            fullCalendar: true,
+            monthCalendar: false,
+            yearCalendar: false
+        };
+        var _datePicker = document.getElementsByClassName('js-dates')[0];
+        var _datePickerBody = '';
+        var _couter = 0, _rowCell = 0, tr, td, addData;
+        var createElement = function(tagName){
+            return document.createElement(tagName);
+        }
+        var prepareDatePicker = function () {
+            tr = '';
+            _couter = 0;
+            _rowCell = 0;
+            if(typeCalendar.yearCalendar){
+                var a = displayCal.getFullYear();
+                var b = a % 10;
+                a = a - b + 1;
+                _couter = a;
+                displayCal.setYear(a);
+            }
+            displayCal.setDate(1);
+            startDay = displayCal.getDay();
+            endData = displayCal.getMonth();
+            currentCal = {
+                startDay: displayCal.getDay(),
+                Month: displayCal.getMonth(),
+                Year: displayCal.getFullYear()
+            }
+            if (typeCalendar.fullCalendar) {
+                currentCal['endDay'] = (function () {
+                    displayCal.setMonth(currentCal.Month + 1);
+                    displayCal.setDate(1);
+                    initialDay = displayCal.getDay();
+                    displayCal.setYear(currentCal.Year);
+                    displayCal.setMonth(currentCal.Month);
+                    return initialDay;
+                })();
+            }            
+            if (_datePickerBody) {
+                _datePickerBody.remove();
+            }
+            var _showColor = false;
+            var picker = {};
+            _datePickerBody = createElement('tbody');
+            _datePicker.appendChild(_datePickerBody);
+            if (_datePicker.className.indexOf('Calendar') != -1) {
+                _datePicker.className = _datePicker.className.replace(/\s.{4,5}Calendar/, '')
+            }
+            if (typeCalendar.yearCalendar) {
+                _showColor = true;
+                _datePicker.className += ' yearCalendar';
+                picker = { start: 0, end: 1, loopCount: _couter + 9, loopReset: 3, highlight: today.Year };
+                document.getElementsByClassName('displayMonth')[0].parentNode.style.display = '';
+                document.getElementsByClassName('displayMonth')[0].textContent = _couter;
+                document.getElementsByClassName('displayYear')[0].textContent = _couter + 9;
+            }
+            else if (typeCalendar.monthCalendar) {
+                if (today.Year == currentCal.Year) {
+                    _showColor = true;
+                }
+                _datePicker.className += ' monthCalendar';
+                document.getElementsByClassName('displayMonth')[0].parentNode.style.display = 'none';
+                picker = { start: 0, end: 0, loopCount: 12, loopReset: 3, highlight: today.Month, };
+                document.getElementsByClassName('displayYear')[0].textContent = currentCal['Year'];
+            }
+            else {
+                if (today.Month == currentCal.Month && today.Year == currentCal.Year) {
+                    _showColor = true;
+                }
+                picker = { start: startDay, end: currentCal['endDay'], loopCount: 28, loopReset: 7, highlight: today.Day - 1 };
+                document.getElementsByClassName('displayMonth')[0].parentNode.style.display = '';
+                document.getElementsByClassName('displayMonth')[0].textContent = months[currentCal['Month']];
+                document.getElementsByClassName('displayYear')[0].textContent = currentCal['Year'];
+            }
+
+            for (var i = 0; true; i++) {
+                if (i == picker.start) {
+                    addData = true;
+                }
+                else if (_couter >= picker.loopCount && _rowCell == picker.end) {
+                    addData = false;
+                }
+                if (_rowCell == 0) {
+                    if(tr){
+                        _datePickerBody.appendChild(tr);
+                        if(!addData){
+                            return _datePicker;
+                        }
+                    }
+                    tr = createElement('tr');
+                }
+                td = createElement('td');
+                if (addData) {
+                    td.className = 'date--cell'
+                    if (_showColor && picker.highlight == _couter) {
+                        td.className += ' today';
+                    }
+                    if (typeCalendar.yearCalendar) {
+                        td.originalValue =  td.textContent = _couter++;
+                    }
+                    else if (typeCalendar.monthCalendar) {
+                        td.originalValue = _couter;
+                        td.textContent = months[_couter++];                        
+                    }
+                    else {
+                        td.originalValue =  td.textContent = ++_couter;
+                    }
+                    td.addEventListener('click', function () {
+                        onSelect(this.originalValue);
+                    });
+                }                
+                tr.appendChild(td);
+                _rowCell++;
+                if(_rowCell == picker.loopReset){
+                    _rowCell = 0;
+                }
+            }
+            debugger;
+            return _datePicker;
+        }
+
+        var onSelect = function (value) {
+            var displayElement = document.getElementsByClassName('selectedDate')[0]
+            if(typeCalendar.yearCalendar){
+                typeCalendar.yearCalendar = false;
+                if (typeCalendar.monthCalendar || typeCalendar.fullCalendar) {
+                    typeCalendar.monthCalendar = true;
+                    displayCal.setYear(value);
+                    prepareDatePicker();
+                    return true;
+                }
+                displayElement.textContent = value;
+            }
+            else if (typeCalendar.monthCalendar) {
+                typeCalendar.monthCalendar = false;
+                if (typeCalendar.fullCalendar) {
+                    displayCal.setMonth(value);
+                    prepareDatePicker();
+                    return true;
+                }
+                displayElement.textContent = months[value - 1] + ',' + displayCal.getFullYear();
+            }
+            else {
+                displayElement.textContent = new Date((displayCal.getMonth() + 1) + '/' + value + '/' + displayCal.getFullYear());
+            }            
+            document.getElementsByClassName('js-date-picker')[0].style.display = 'none';
+        };
+
+        var previousMonth = function () {
+            if (typeCalendar.yearCalendar) {
+                displayCal.setYear(displayCal.getFullYear() - 10);
+            }
+            else if (typeCalendar.monthCalendar) {
+                displayCal.setYear(displayCal.getFullYear() - 1);
+            }
+            else {
+                var prevMonth = displayCal.getMonth() - 1;
+                if (prevMonth < 0) {
+                    prevMonth = 11;
+                    var prevYear = displayCal.getFullYear() - 1;
+                    displayCal.setYear(prevYear);
+                }
+                displayCal.setMonth(prevMonth);
+            }            
+            prepareDatePicker();
+        }
+        var nextMonth = function () {
+            if (typeCalendar.yearCalendar) {
+                displayCal.setYear(displayCal.getFullYear() + 10);
+            }
+            else if (typeCalendar.monthCalendar) {
+                displayCal.setYear(displayCal.getFullYear() + 1);
+            }
+            else {
+                var nextMonth = displayCal.getMonth() + 1;
+                if (nextMonth == 12) {
+                    nextMonth = 0;
+                    var nextYear = displayCal.getFullYear() + 1;
+                    displayCal.setYear(nextYear);
+                }
+                displayCal.setMonth(nextMonth);
+            }            
+            prepareDatePicker();
+        }
+        var displayMonthCal = function () {
+            if(typeCalendar.yearCalendar){
+                return false;
+            }
+            typeCalendar.monthCalendar = true;
+            prepareDatePicker();
+        }
+        var displayYearCal = function () {
+            if (typeCalendar.yearCalendar) {
+                return false;
+            }
+            typeCalendar.yearCalendar = true;
+            prepareDatePicker();
+        }
+
+        //prepareDatePicker();
+
+
+        var createGrid = function (config) {
+            var _config = {
+                id: 'dynamicGrid',
+                fixedHeader: true,
+                editable: true,
+                multiselect: false,
+                dropdowns: [],
+                columns: [],
+                data: [],
+                pagination: {
+                    pageSize: 30
+                }                
+            };
+            for (var i in config) {
+                if(_config.hasOwnProperty(i)){
+                    _config[i] = config[i];
+                }
+            }
+            _config.data = _config.data.concat(_config.data);
+            _config.data = _config.data.concat(_config.data);
+            _config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+            //_config.data = _config.data.concat(_config.data);
+
+            var template = _config.columns.find(function (obj) {
+                return obj['fieldname'] == 'price';
+            })
+            template['template'] = function (data) {
+                var color = ''
+                if (data > 40) {
+                    color = "success";
+                }
+                else if(data > 20){
+                    color = "info";
+                }
+                else {
+                    color = "danger";
+                }
+                return '<span class="bg-'+ color +'">' + data + '</span>';
+            }
+            dataGrid = Grid.PrepareGrid(_config);
+            _config.id = 'dynamicGrid2';
+            var l = Grid.PrepareGrid(_config);
+        };
+
+        var http = new XMLHttpRequest();
+        http.open("GET", './data/ds-basic.json');
+        http.onreadystatechange = function (d) {
+            if(http.readyState == XMLHttpRequest.DONE && http.status == 200){
+                var response = JSON.parse(http.responseText);
+                var config = {
+                    data: response['data'],
+                    selector: 'div[data-grid]',
+                    columns: response['columns'],
+                    dropdowns: response['dropdowns']
+                };
+                createGrid(config);
+            }
+        };
+        http.send();
+    </script>
+
+</body>
+</html>
